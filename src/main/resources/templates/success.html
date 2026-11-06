@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Thành Công - Tuấn Vi Vu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #0ea5e9; --dark: #0f172a; --light: #f8fafc; --success: #10b981; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--light); color: var(--dark); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+        
+        .success-card { background: white; padding: 3rem; border-radius: 24px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.1); max-width: 550px; width: 100%; text-align: center; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid #f1f5f9; }
+        
+        @keyframes slideUp { from {opacity: 0; transform: translateY(40px);} to {opacity: 1; transform: translateY(0);} }
+        
+        .icon-circle { width: 90px; height: 90px; background: #d1fae5; color: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto 1.5rem; }
+        
+        h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--dark); }
+        p.subtitle { color: #64748b; margin-bottom: 2.5rem; font-size: 1.1rem; }
+        
+        .order-details { text-align: left; background: #f8fafc; padding: 2rem; border-radius: 16px; margin-bottom: 2rem; border: 1px solid #e2e8f0; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 1rem; align-items: center; }
+        .row:last-child { margin-bottom: 0; }
+        .label { color: #64748b; font-weight: 500; }
+        .val { font-weight: 700; color: var(--dark); text-align: right; }
+        
+        .divider { height: 1px; background: #cbd5e1; margin: 1.5rem 0; }
+        
+        .total-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+        .total-label { font-size: 1.2rem; font-weight: 700; color: var(--dark); } 
+        .total-val { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+        
+        .email-notice { font-size: 0.9rem; color: #10b981; background: #ecfdf5; padding: 12px; border-radius: 8px; margin-bottom: 2rem; font-weight: 500; }
+
+        .btn { display: inline-block; padding: 14px 35px; background: var(--primary); color: white; border-radius: 50px; font-weight: 700; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); }
+        .btn:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4); }
+
+        /* Payment Instructions */
+        .payment-instructions { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; text-align: left; }
+        .payment-instructions h3 { font-size: 1.1rem; color: #166534; margin-bottom: 0.5rem; }
+        .payment-instructions p { color: #15803d; font-size: 0.95rem; margin-bottom: 0.5rem; line-height: 1.5; }
+        .payment-instructions ul { margin-left: 1.5rem; margin-bottom: 1rem; color: #15803d; font-size: 0.95rem; }
+        .payment-instructions ul li { margin-bottom: 0.25rem; }
+        .payment-instructions .highlight { background: white; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700; color: #047857; display: inline-block; margin: 0.5rem 0; border: 1px dashed #34d399; }
+    </style>
+</head>
+<body>
+
+    <div class="success-card">
+        <div class="icon-circle">✓</div>
+        <h1>Đặt Tour Thành Công!</h1>
+        <p class="subtitle">Mã đơn hàng: <b th:text="${order.orderCode}" style="color: var(--primary);"></b></p>
+        
+        <div class="email-notice">
+            📩 Email xác nhận đã được gửi đến: <b th:text="${order.email}"></b>
+        </div>
+
+        <div class="order-details">
+            <div class="row">
+                <span class="label">Tour:</span>
+                <span class="val" th:text="${order.tour.name}"></span>
+            </div>
+            <div class="row">
+                <span class="label">Khách hàng:</span>
+                <span class="val" th:text="${order.fullName}"></span>
+            </div>
+            <div class="row">
+                <span class="label">Số điện thoại:</span>
+                <span class="val" th:text="${order.phone}"></span>
+            </div>
+            <div class="row">
+                <span class="label">Số lượng vé:</span>
+                <span class="val" th:text="${order.adultTickets} + ' Người lớn, ' + ${order.childrenTickets} + ' Trẻ em'"></span>
+            </div>
+            <div class="row">
+                <span class="label">Thanh toán:</span>
+                <span class="val" style="color: var(--primary);" th:text="${order.paymentMethod}"></span>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="row" th:if="${order.discountAmount > 0}">
+                <span class="label">Tạm tính:</span>
+                <span class="val" th:text="${#numbers.formatDecimal(order.subTotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+            </div>
+            <div class="row" th:if="${order.discountAmount > 0}">
+                <span class="label">Giảm giá:</span>
+                <span class="val" style="color: var(--success);" th:text="'- ' + ${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+            </div>
+            
+            <div th:if="${order.discountAmount > 0}" class="divider"></div>
+            
+            <div class="total-row">
+                <span class="total-label">Tổng thanh toán:</span>
+                <span class="total-val" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+            </div>
+        </div>
+
+
+
+        <!-- Momo Instructions -->
+        <div th:if="${order.paymentMethod == 'Thanh toán Momo'}" class="payment-instructions" style="background: #fdf4ff; border-color: #f5d0fe;">
+            <h3 style="color: #86198f;">👛 Hướng dẫn thanh toán Momo</h3>
+            <p style="color: #a21caf;">Mở ứng dụng Momo và chuyển <b th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></b> tới số điện thoại sau:</p>
+            <ul>
+                <li style="color: #a21caf;">Số điện thoại: <b>0987.654.321</b></li>
+                <li style="color: #a21caf;">Tên người nhận: <b>TUAN VI VU</b></li>
+            </ul>
+            <p style="color: #a21caf;">Lời nhắn (Bắt buộc):</p>
+            <div class="highlight" style="border-color: #e879f9; color: #86198f;" th:text="${order.orderCode}"></div>
+        </div>
+
+        <!-- Office Payment Instructions -->
+        <div th:if="${order.paymentMethod == 'Thanh toán tại văn phòng'}" class="payment-instructions" style="background: #eff6ff; border-color: #bfdbfe;">
+            <h3 style="color: #1e40af;">🏢 Thanh toán tại văn phòng</h3>
+            <p style="color: #1d4ed8;">Vui lòng đến văn phòng của chúng tôi trong vòng 24h để hoàn tất thanh toán:</p>
+            <ul>
+                <li style="color: #1d4ed8;">Địa chỉ: <b>123 Đường Du Lịch, Quận 1, TP.HCM</b></li>
+                <li style="color: #1d4ed8;">Giờ làm việc: <b>08:00 - 17:30 (Thứ 2 - Thứ 7)</b></li>
+            </ul>
+            <p style="color: #1d4ed8;">Khi đến, vui lòng đọc mã đơn hàng: <b th:text="${order.orderCode}"></b></p>
+        </div>
+
+        <!-- Stripe Instructions (Already Paid) -->
+        <div th:if="${order.paymentMethod == 'Thanh toán qua Stripe (Visa/MasterCard)'}" class="payment-instructions" style="background: #f0fdf4; border-color: #bbf7d0;">
+            <h3 style="color: #166534;">💳 Đã thanh toán thẻ thành công</h3>
+            <p style="color: #15803d;">Cảm ơn bạn đã thanh toán trực tuyến an toàn qua cổng Stripe.</p>
+            <p style="color: #15803d;">Đơn hàng của bạn sẽ được tự động xử lý và gửi vé điện tử qua email ngay lập tức.</p>
+        </div>
+        
+        <a href="/tours" class="btn">Tiếp tục khám phá</a>
+    </div>
+
+</body>
+</html>

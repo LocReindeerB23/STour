@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử Đặt Tour - Tuấn Vi Vu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #0ea5e9; --primary-hover: #0284c7; --dark: #0f172a; --light: #f8fafc; --gray: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--light); color: var(--dark); line-height: 1.6; }
+        
+        /* Navbar */
+        .navbar { background: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); text-decoration: none; }
+        .nav-links a { margin-left: 2rem; text-decoration: none; color: var(--dark); font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-links .active { color: var(--primary); font-weight: 700; }
+
+        /* Page Content */
+        .container { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+        .page-header { margin-bottom: 2rem; }
+        .page-title { font-size: 1.8rem; font-weight: 800; }
+        .page-subtitle { color: var(--gray); margin-top: 0.3rem; }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 4rem 2rem; background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); border: 1px solid #f1f5f9; }
+        .empty-icon { font-size: 4rem; margin-bottom: 1rem; }
+        .empty-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .empty-desc { color: var(--gray); margin-bottom: 1.5rem; }
+        .btn { padding: 10px 24px; background: var(--primary); color: white; border: none; border-radius: 50px; font-size: 1rem; font-weight: 600; text-decoration: none; transition: all 0.3s; cursor: pointer; display: inline-block; }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3); }
+
+        /* Order Cards */
+        .order-card { background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); border: 1px solid #f1f5f9; margin-bottom: 1.25rem; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
+        .order-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px -5px rgb(0 0 0 / 0.1); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; border-bottom: 1px solid #f1f5f9; }
+        .order-code { font-weight: 700; font-size: 1.05rem; color: var(--primary); }
+        .status-badge { display: inline-block; padding: 5px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.3px; }
+        .status-PENDING { background: #fef3c7; color: #d97706; }
+        .status-CONFIRMED { background: #dcfce7; color: #166534; }
+        .status-CANCELED { background: #fee2e2; color: #b91c1c; }
+
+        .card-body { padding: 1.25rem 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem 2rem; }
+        .info-item { display: flex; flex-direction: column; }
+        .info-label { font-size: 0.8rem; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-value { font-weight: 600; font-size: 0.95rem; margin-top: 2px; }
+        .info-value.price { color: var(--primary); font-size: 1.1rem; font-weight: 800; }
+
+        .card-footer { display: flex; justify-content: flex-end; align-items: center; padding: 1rem 1.5rem; border-top: 1px solid #f1f5f9; background: #fafafa; }
+        .btn-cancel { padding: 8px 18px; background: #fee2e2; color: #b91c1c; border: none; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .btn-cancel:hover { background: #fecaca; transform: translateY(-1px); }
+        .done-label { font-size: 0.85rem; color: var(--gray); font-style: italic; }
+
+        /* Footer */
+        .footer { background: white; text-align: center; padding: 2rem; margin-top: 4rem; color: var(--gray); border-top: 1px solid #e2e8f0; }
+        
+        @media (max-width: 600px) {
+            .card-body { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="logo">Tuấn Vi Vu ✈️</a>
+        <div class="nav-links">
+            <a href="/">Trang chủ</a>
+            <a href="/tours">Danh sách Tour</a>
+            <a href="/my-bookings" class="active">Lịch sử đặt tour</a>
+            <span th:if="${session.user != null}" style="margin-left: 2rem; font-weight: 600;">
+                Chào, <span th:text="${session.user.fullName}"></span>! 
+                <a href="/profile" style="color: #0ea5e9; margin-left: 10px; text-decoration: none;">Hồ sơ</a>
+                <a href="/logout" style="color: #dc2626; margin-left: 10px;">Đăng xuất</a>
+            </span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">📋 Lịch sử Đặt Tour</h1>
+            <p class="page-subtitle">Theo dõi trạng thái tất cả các đơn đặt tour của bạn</p>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${orders.empty}" class="empty-state">
+            <div class="empty-icon">🧳</div>
+            <h2 class="empty-title">Bạn chưa đặt tour nào</h2>
+            <p class="empty-desc">Hãy khám phá các tour tuyệt vời của chúng tôi và đặt ngay chuyến đi đầu tiên nhé!</p>
+            <a href="/tours" class="btn">Khám phá Tour ngay</a>
+        </div>
+
+        <!-- Order Cards -->
+        <div th:each="order : ${orders}" class="order-card">
+            <div class="card-header">
+                <span class="order-code" th:text="${order.orderCode}">ORD-XXXXXXXX</span>
+                <span th:class="'status-badge status-' + ${order.status}" th:text="${order.status}">PENDING</span>
+            </div>
+            <div class="card-body">
+                <div class="info-item">
+                    <span class="info-label">Tour</span>
+                    <span class="info-value" th:text="${order.tour.name}">Tên Tour</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Điểm đến</span>
+                    <span class="info-value" th:text="${order.tour.destination}">Địa điểm</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Số vé</span>
+                    <span class="info-value" th:text="${order.adultTickets} + ' Người lớn, ' + ${order.childrenTickets} + ' Trẻ em'">1 NL, 0 TE</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Tổng tiền</span>
+                    <span class="info-value price" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Phương thức</span>
+                    <span class="info-value" th:text="${order.paymentMethod ?: 'Chưa chọn'}">--</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Ngày khởi hành</span>
+                    <span class="info-value" th:text="${#temporals.format(order.tour.departureDate, 'dd/MM/yyyy')}">01/01/2026</span>
+                </div>
+            </div>
+            <div class="card-footer">
+                <form th:if="${order.status == 'PENDING'}" th:action="@{/my-bookings/{id}/cancel(id=${order.id})}" method="post" 
+                      onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn này không?');">
+                    <button type="submit" class="btn-cancel">✕ Hủy đơn</button>
+                </form>
+                <span th:if="${order.status == 'CONFIRMED'}" class="done-label">✔ Đã xác nhận bởi Admin</span>
+                <span th:if="${order.status == 'CANCELED'}" class="done-label">✕ Đã hủy</span>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© 2026 Tuấn Vi Vu (Software Testing Edition). All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

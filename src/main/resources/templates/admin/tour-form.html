@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${tour.id == null ? 'Thêm Tour Mới' : 'Sửa Tour'} + ' - Tuấn Vi Vu Admin'"></title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #0ea5e9; --dark: #0f172a; --light: #f8fafc; --gray: #64748b; --sidebar: #1e293b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { display: flex; min-height: 100vh; background-color: var(--light); color: var(--dark); }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background-color: var(--sidebar); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-header { padding: 2rem 1.5rem; font-size: 1.5rem; font-weight: 800; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-nav { flex-grow: 1; padding: 1.5rem 0; }
+        .nav-item { display: block; padding: 1rem 1.5rem; color: #cbd5e1; text-decoration: none; font-weight: 500; transition: all 0.3s; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: var(--primary); color: white; border-left: 4px solid #38bdf8; }
+        .sidebar-footer { padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-footer a { color: #ef4444; text-decoration: none; font-weight: 600; }
+        
+        /* Main Content */
+        .main-content { flex-grow: 1; padding: 2.5rem; overflow-y: auto; }
+        .page-header { margin-bottom: 2.5rem; display: flex; align-items: center; gap: 15px; }
+        .page-title { font-size: 1.8rem; font-weight: 800; }
+        .btn-back { color: var(--gray); text-decoration: none; font-weight: 600; font-size: 1rem; }
+        .btn-back:hover { color: var(--dark); }
+        
+        .section-box { background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); padding: 2rem; border: 1px solid #f1f5f9; max-width: 900px; }
+        
+        /* Form */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: var(--dark); }
+        input[type="text"], input[type="number"], input[type="date"], select, textarea { 
+            width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; 
+            font-size: 1rem; transition: border-color 0.2s; 
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; }
+        textarea { resize: vertical; min-height: 100px; }
+        
+        .btn-submit { background: var(--primary); color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; margin-top: 10px; }
+        .btn-submit:hover { background: #0284c7; }
+
+        /* Image Upload */
+        .image-upload-area { position: relative; border: 2px dashed #cbd5e1; border-radius: 12px; overflow: hidden; transition: all 0.3s; cursor: pointer; }
+        .image-upload-area:hover, .image-upload-area.drag-over { border-color: var(--primary); background: #f0f9ff; }
+        .image-upload-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; gap: 8px; }
+        .upload-icon { font-size: 2.5rem; }
+        .upload-text { font-size: 1rem; font-weight: 600; color: var(--dark); }
+        .upload-hint { font-size: 0.85rem; color: var(--gray); }
+        .file-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: -1; }
+        .image-preview-container { position: relative; }
+        .image-preview-container img { width: 100%; max-height: 300px; object-fit: cover; display: block; border-radius: 10px; }
+        .btn-remove-image { position: absolute; top: 10px; right: 10px; background: rgba(239,68,68,0.9); color: white; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; z-index: 2; }
+        .btn-remove-image:hover { background: #dc2626; }
+        .current-url-note { margin-top: 8px; font-size: 0.8rem; color: var(--gray); word-break: break-all; }
+        .current-url-note a { color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <a href="/" class="sidebar-header">Tuấn Vi Vu Admin</a>
+        <div class="sidebar-nav">
+            <a href="/admin" class="nav-item">📊 Dashboard</a>
+            <a href="/admin/orders" class="nav-item">📝 Quản lý Đơn hàng</a>
+            <a href="/admin/tours" class="nav-item active">🏖️ Quản lý Tour</a>
+        </div>
+        <div class="sidebar-footer">
+            <a href="/">← Quay lại Website</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <a href="/admin/tours" class="btn-back">← Quay lại</a>
+            <h1 class="page-title" th:text="${tour.id == null ? 'Thêm Tour Mới' : 'Cập nhật Tour: ' + tour.name}"></h1>
+        </div>
+
+        <div class="section-box">
+            <form th:action="@{${tour.id != null ? '/admin/tours/edit/' + tour.id : '/admin/tours'}}" th:object="${tour}" method="post" enctype="multipart/form-data">
+                
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="name">Tên Tour *</label>
+                        <input type="text" id="name" th:field="*{name}" required placeholder="VD: Hà Nội - Đà Lạt 3N2Đ">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category">Danh mục *</label>
+                        <input type="text" id="category" th:field="*{category}" required placeholder="VD: Nghỉ dưỡng, Núi...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="destination">Điểm đến</label>
+                        <input type="text" id="destination" th:field="*{destination}" placeholder="VD: Đà Lạt">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="departureDate">Ngày khởi hành *</label>
+                        <input type="date" id="departureDate" th:field="*{departureDate}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">Trạng thái</label>
+                        <select id="status" th:field="*{status}">
+                            <option value="Active">Hoạt động (Active)</option>
+                            <option value="Inactive">Ngừng bán (Inactive)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="priceAdult">Giá Người lớn (VNĐ) *</label>
+                        <input type="number" id="priceAdult" th:field="*{priceAdult}" required step="any">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="priceChildren">Giá Trẻ em (VNĐ) *</label>
+                        <input type="number" id="priceChildren" th:field="*{priceChildren}" required step="any">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stockAdult">Số chỗ Người lớn *</label>
+                        <input type="number" id="stockAdult" th:field="*{stockAdult}" required min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stockChildren">Số chỗ Trẻ em *</label>
+                        <input type="number" id="stockChildren" th:field="*{stockChildren}" required min="0">
+                    </div>
+                    
+                    <!-- Image Upload Section -->
+                    <div class="form-group full-width">
+                        <label>Ảnh Đại diện Tour</label>
+                        <div class="image-upload-area">
+                            <div class="image-preview-container" id="imagePreviewContainer" th:style="${tour.imageUrl != null && !tour.imageUrl.isEmpty()} ? 'display:block' : 'display:none'">
+                                <img id="imagePreview" th:src="${tour.imageUrl}" alt="Preview ảnh tour" />
+                                <button type="button" class="btn-remove-image" id="btnRemoveImage" title="Xóa ảnh">✕</button>
+                            </div>
+                            <div class="image-upload-placeholder" id="uploadPlaceholder" th:style="${tour.imageUrl != null && !tour.imageUrl.isEmpty()} ? 'display:none' : 'display:flex'">
+                                <span class="upload-icon">📷</span>
+                                <span class="upload-text">Kéo thả ảnh hoặc bấm để chọn</span>
+                                <span class="upload-hint">PNG, JPG, WEBP (tối đa 10MB)</span>
+                            </div>
+                            <input type="file" id="imageFile" name="imageFile" accept="image/*" class="file-input" />
+                        </div>
+                        <p class="current-url-note" th:if="${tour.imageUrl != null && !tour.imageUrl.isEmpty()}">
+                            Ảnh hiện tại: <a th:href="${tour.imageUrl}" target="_blank" th:text="${tour.imageUrl}"></a>
+                        </p>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="itinerary">Lịch trình</label>
+                        <textarea id="itinerary" th:field="*{itinerary}" placeholder="Nhập lịch trình chi tiết..."></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="includedServices">Dịch vụ bao gồm</label>
+                        <textarea id="includedServices" th:field="*{includedServices}" placeholder="Khách sạn, vé máy bay..."></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="excludedServices">Dịch vụ không bao gồm</label>
+                        <textarea id="excludedServices" th:field="*{excludedServices}" placeholder="Chi phí cá nhân..."></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="cancellationPolicy">Chính sách hủy</label>
+                        <textarea id="cancellationPolicy" th:field="*{cancellationPolicy}" placeholder="Hủy trước 7 ngày..."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" th:text="${tour.id == null ? 'Tạo Tour' : 'Lưu Thay đổi'}"></button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('imageFile');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+        const btnRemoveImage = document.getElementById('btnRemoveImage');
+
+        // Click placeholder to trigger file input
+        uploadPlaceholder.addEventListener('click', function() {
+            fileInput.click();
+        });
+
+        // Click preview image to change it
+        previewContainer.addEventListener('click', function(e) {
+            if (e.target !== btnRemoveImage) {
+                fileInput.click();
+            }
+        });
+
+        // File selected → show preview
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagePreview.src = event.target.result;
+                    previewContainer.style.display = 'block';
+                    uploadPlaceholder.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Remove image button
+        btnRemoveImage.addEventListener('click', function(e) {
+            e.stopPropagation();
+            fileInput.value = '';
+            imagePreview.src = '';
+            previewContainer.style.display = 'none';
+            uploadPlaceholder.style.display = 'flex';
+        });
+
+        // Drag & drop support
+        const uploadArea = document.querySelector('.image-upload-area');
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('drag-over');
+            });
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+            });
+        });
+        uploadArea.addEventListener('drop', function(e) {
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        });
+    </script>
+
+</body>
+</html>

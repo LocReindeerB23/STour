@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Chi tiết: ' + ${tour.name}">Chi tiết Tour</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #0ea5e9; --primary-hover: #0284c7; --dark: #0f172a; --light: #f8fafc; --gray: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--light); color: var(--dark); line-height: 1.6; }
+        
+        .navbar { background: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); text-decoration: none; }
+        .back-link { text-decoration: none; color: var(--dark); font-weight: 500; }
+
+        .container { max-width: 1200px; margin: 3rem auto; padding: 0 20px; }
+        .detail-card { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 3rem; }
+        
+        .hero-img { height: 100%; min-height: 450px; position: relative; }
+        .hero-img img { width: 100%; height: 100%; object-fit: cover; }
+        .badge { position: absolute; top: 1.5rem; left: 1.5rem; background: rgba(0,0,0,0.7); color: white; padding: 8px 20px; border-radius: 50px; font-weight: 600; backdrop-filter: blur(4px); }
+
+        .content { padding: 3rem; display: flex; flex-direction: column; }
+        .tour-dest { font-size: 0.9rem; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 4px; }
+        .title { font-size: 2.5rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--dark); line-height: 1.2; }
+        .status { display: inline-block; padding: 6px 16px; background: #dcfce7; color: #166534; border-radius: 50px; font-size: 0.9rem; font-weight: 600; margin-bottom: 1.5rem; }
+        
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem; }
+        .info-item { background: var(--light); padding: 1.5rem; border-radius: 16px; display: flex; flex-direction: column; }
+        .info-label { font-size: 0.9rem; color: var(--gray); display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .info-val { font-size: 1.2rem; font-weight: 700; color: var(--dark); }
+
+        .price-section { margin-top: auto; padding-top: 2rem; border-top: 1px solid #e2e8f0; }
+        .price-title { font-size: 1.1rem; color: var(--gray); margin-bottom: 1rem; display: block; font-weight: 600; }
+        .price-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .price-val { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+        .price-val-sm { font-size: 1.4rem; font-weight: 700; color: var(--gray); }
+        
+        .btn { display: block; text-align: center; width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; text-decoration: none; transition: all 0.3s; cursor: pointer; box-shadow: 0 4px 14px 0 rgba(14, 165, 233, 0.39); }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5); }
+
+        /* Extra Details Section */
+        .extra-details { background: white; border-radius: 24px; padding: 3rem; box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.05); display: grid; grid-template-columns: 2fr 1fr; gap: 3rem; }
+        .section-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--dark); display: flex; align-items: center; gap: 10px; }
+        
+        .itinerary-item { position: relative; padding-left: 2rem; border-left: 2px dashed #cbd5e1; margin-bottom: 2rem; padding-bottom: 0; }
+        .itinerary-item::before { content: ''; position: absolute; left: -9px; top: 0; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); }
+        .itinerary-content { white-space: pre-wrap; color: var(--gray); }
+        
+        .services-box { background: var(--light); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; }
+        .services-list { list-style: none; }
+        .services-list li { margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 10px; color: var(--gray); }
+        .services-list.inc li::before { content: '✅'; }
+        .services-list.exc li::before { content: '❌'; }
+
+        .policy-box { background: #fff1f2; border: 1px solid #fecdd3; padding: 2rem; border-radius: 16px; }
+        .policy-content { white-space: pre-wrap; color: #881337; font-size: 0.95rem; }
+
+        @media (max-width: 992px) {
+            .detail-card, .extra-details { grid-template-columns: 1fr; gap: 2rem; }
+            .hero-img { height: 350px; min-height: unset; }
+            .content { padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="logo">Tuấn Vi Vu ✈️</a>
+        <div class="nav-links" style="display: flex; align-items: center;">
+            <a href="/tours" class="back-link" style="margin-right: 2rem;">← Tất cả Tour</a>
+            <a th:if="${session.user != null}" href="/my-bookings" style="margin-right: 2rem; text-decoration: none; font-weight: 500; color: var(--dark);">Lịch sử đặt tour</a>
+            <a th:if="${session.user == null}" href="/register" style="border: 1px solid var(--primary); color: var(--primary); padding: 8px 16px; border-radius: 50px; text-decoration: none; font-weight: 500; margin-right: 10px;">Đăng ký</a>
+            <a th:if="${session.user == null}" href="/login" style="background: var(--primary); color: white; padding: 8px 16px; border-radius: 50px; text-decoration: none; font-weight: 500;">Đăng nhập</a>
+            <span th:if="${session.user != null}" style="font-weight: 600;">
+                Chào, <span th:text="${session.user.fullName}"></span>! 
+                <a href="/profile" style="color: #0ea5e9; margin-left: 10px; text-decoration: none;">Hồ sơ</a>
+                <a href="/logout" style="color: #dc2626; margin-left: 10px; text-decoration: none;">Đăng xuất</a>
+            </span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Main Card -->
+        <div class="detail-card">
+            <div class="hero-img">
+                <img th:src="${tour.imageUrl != null ? tour.imageUrl : 'https://images.unsplash.com/photo-1528181304800-259b08848526?q=80&w=800&auto=format&fit=crop&sig=' + tour.id}" alt="Tour Image">
+                <span class="badge" th:text="${tour.category}">Danh mục</span>
+            </div>
+            
+            <div class="content">
+                <span class="status" th:text="${tour.status == 'Active' ? 'Đang mở bán' : 'Tạm ngưng'}">Trạng thái</span>
+                <span class="tour-dest">📍 <span th:text="${tour.destination != null ? tour.destination : 'Điểm đến thú vị'}"></span></span>
+                <h1 class="title" th:text="${tour.name}">Tên Tour</h1>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">📅 Ngày khởi hành</span>
+                        <span class="info-val" th:text="${tour.departureDate}"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">👥 Chỗ Người lớn</span>
+                        <span class="info-val" th:text="'Còn ' + ${tour.stockAdult} + ' vé'"></span>
+                    </div>
+                    <div class="info-item" style="grid-column: span 2;">
+                        <span class="info-label">👶 Chỗ Trẻ em</span>
+                        <span class="info-val" th:text="'Còn ' + ${tour.stockChildren} + ' vé'"></span>
+                    </div>
+                </div>
+
+                <div class="price-section">
+                    <span class="price-title">Bảng giá tham khảo</span>
+                    <div class="price-row">
+                        <span>Người lớn:</span>
+                        <span class="price-val" th:text="${#numbers.formatDecimal(tour.priceAdult, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+                    </div>
+                    <div class="price-row" style="margin-bottom: 2rem;">
+                        <span>Trẻ em:</span>
+                        <span class="price-val-sm" th:text="${#numbers.formatDecimal(tour.priceChildren, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+                    </div>
+                    
+                    <a th:href="@{/orders/new(tourId=${tour.id})}" class="btn">🚀 Đặt Tour Ngay</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Extra Details -->
+        <div class="extra-details">
+            <div class="left-col">
+                <h2 class="section-title">🗺️ Lịch trình chi tiết</h2>
+                <div th:if="${tour.itinerary == null or tour.itinerary.isEmpty()}">
+                    <p style="color: var(--gray);">Lịch trình đang được cập nhật...</p>
+                </div>
+                <div th:if="${tour.itinerary != null and !tour.itinerary.isEmpty()}" class="itinerary-item">
+                    <div class="itinerary-content" th:text="${tour.itinerary}">Lịch trình</div>
+                </div>
+            </div>
+            
+            <div class="right-col">
+                <div class="services-box">
+                    <h3 class="section-title" style="font-size: 1.2rem;">Dịch vụ bao gồm</h3>
+                    <ul class="services-list inc">
+                        <li th:if="${tour.includedServices == null or tour.includedServices.isEmpty()}">Đang cập nhật...</li>
+                        <li th:if="${tour.includedServices != null}" th:text="${tour.includedServices}">Dịch vụ 1</li>
+                    </ul>
+
+                    <h3 class="section-title" style="font-size: 1.2rem; margin-top: 2rem;">Không bao gồm</h3>
+                    <ul class="services-list exc">
+                        <li th:if="${tour.excludedServices == null or tour.excludedServices.isEmpty()}">Đang cập nhật...</li>
+                        <li th:if="${tour.excludedServices != null}" th:text="${tour.excludedServices}">Dịch vụ 2</li>
+                    </ul>
+                </div>
+
+                <div class="policy-box">
+                    <h3 class="section-title" style="font-size: 1.2rem; color: #881337;">⚠️ Chính sách hoàn hủy</h3>
+                    <div class="policy-content" th:text="${tour.cancellationPolicy != null ? tour.cancellationPolicy : 'Miễn phí hủy trước 7 ngày.'}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

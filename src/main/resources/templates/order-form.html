@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Tour - Tuấn Vi Vu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #0ea5e9; --primary-hover: #0284c7; --dark: #0f172a; --light: #f8fafc; --gray: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--light); color: var(--dark); display: flex; flex-direction: column; min-height: 100vh; }
+        
+        .navbar { background: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); text-decoration: none; }
+
+        .container { max-width: 1000px; margin: 3rem auto; padding: 0 20px; flex-grow: 1; }
+        
+        .layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; background: white; border-radius: 20px; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); overflow: hidden; }
+        
+        /* Summary Sidebar */
+        .tour-info { background: var(--dark); color: white; padding: 3rem 2rem; display: flex; flex-direction: column; }
+        .tour-info h2 { font-size: 1.8rem; margin-bottom: 1rem; color: #38bdf8; line-height: 1.3; }
+        .info-row { margin-bottom: 1.5rem; }
+        .info-label { font-size: 0.9rem; color: #94a3b8; display: block; margin-bottom: 0.25rem; }
+        .info-val { font-size: 1.1rem; font-weight: 600; }
+        
+        .price-breakdown { background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 12px; margin-top: auto; }
+        .calc-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; color: #cbd5e1; }
+        .divider { height: 1px; background: rgba(255,255,255,0.2); margin: 1rem 0; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; }
+        .total-val { font-size: 1.8rem; font-weight: 800; color: #38bdf8; }
+        
+        /* Form Section */
+        .booking-form { padding: 3rem 2.5rem; }
+        .form-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 8px; }
+        
+        .form-group { margin-bottom: 1.25rem; }
+        label { display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.95rem; color: var(--dark); }
+        input, select, textarea { width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s; outline: none; background: #f8fafc; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2); background: white; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+        /* Validation UI */
+        .error-alert { background: #fee2e2; border-left: 4px solid #ef4444; color: #b91c1c; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 500; }
+        .field-error { color: #ef4444; font-size: 0.85rem; margin-top: 5px; display: block; font-weight: 500; }
+        input.has-error, select.has-error { border-color: #ef4444; background: #fef2f2; }
+
+        .btn-submit { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; margin-top: 1.5rem; box-shadow: 0 4px 14px rgba(14, 165, 233, 0.4); }
+        .btn-submit:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5); }
+
+        /* Payment Methods */
+        .payment-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.5rem; }
+        .payment-card { position: relative; cursor: pointer; }
+        .payment-card input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+        .payment-content { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 1.25rem 1rem; background: white; border: 2px solid #cbd5e1; border-radius: 12px; transition: all 0.3s ease; text-align: center; height: 100%; }
+        .payment-content i { font-size: 1.8rem; color: #64748b; transition: color 0.3s ease; }
+        .payment-content span { font-weight: 600; font-size: 0.95rem; color: #475569; }
+        
+        .payment-card input:checked ~ .payment-content { border-color: var(--primary); background: #f0f9ff; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15); }
+        .payment-card input:checked ~ .payment-content i { color: var(--primary); }
+        .payment-card input:checked ~ .payment-content span { color: var(--primary); }
+        
+        .payment-card:hover .payment-content { border-color: #94a3b8; }
+        .payment-card input:checked:hover ~ .payment-content { border-color: var(--primary); }
+
+        @media (max-width: 768px) { .layout { grid-template-columns: 1fr; } .payment-methods { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="logo">Tuấn Vi Vu ✈️</a>
+        <div class="nav-links">
+            <a href="/tours" style="text-decoration: none; color: var(--dark); font-weight: 500; margin-right: 2rem;">← Hủy Đặt</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="layout">
+            <!-- Sidebar: Tour Summary & Dynamic Calculation -->
+            <div class="tour-info">
+                <span style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 5px;">Tour bạn chọn</span>
+                <h2 th:text="${tour.name}">Tên Tour</h2>
+                
+                <div class="info-row">
+                    <span class="info-label">Khởi hành</span>
+                    <span class="info-val">📍 <span th:text="${tour.destination}"></span> - 📅 <span th:text="${tour.departureDate}"></span></span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Đơn giá</span>
+                    <span class="info-val">Người lớn: <span th:text="${#numbers.formatDecimal(tour.priceAdult, 0, 'COMMA', 0, 'POINT')}"></span> ₫</span><br>
+                    <span class="info-val">Trẻ em: <span th:text="${#numbers.formatDecimal(tour.priceChildren, 0, 'COMMA', 0, 'POINT')}"></span> ₫</span>
+                </div>
+                
+                <!-- Dynamic Price Breakdown -->
+                <div class="price-breakdown">
+                    <div class="calc-row">
+                        <span id="adultCalcTxt">1 Người lớn</span>
+                        <span id="adultCalcPrice">0 ₫</span>
+                    </div>
+                    <div class="calc-row">
+                        <span id="childCalcTxt">0 Trẻ em</span>
+                        <span id="childCalcPrice">0 ₫</span>
+                    </div>
+                    <div class="calc-row" style="color: #4ade80; display: none;" id="discountRow">
+                        <span>Giảm giá (Từ 5 vé giảm 10%)</span>
+                        <span id="discountPrice">- 0 ₫</span>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="total-row">
+                        <span>Tổng tiền:</span>
+                        <span class="total-val" id="finalTotal">0 ₫</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Form with Validation -->
+            <div class="booking-form">
+                <h3 class="form-title">📝 Nhập thông tin liên hệ</h3>
+                
+                <div th:if="${error != null}" class="error-alert">
+                    ⚠️ <span th:text="${error}"></span>
+                </div>
+
+                <form th:action="@{/orders}" th:object="${orderDTO}" method="post">
+                    <input type="hidden" th:field="*{tourId}" />
+
+                    <div class="form-group">
+                        <label>Họ và Tên *</label>
+                        <input type="text" th:field="*{fullName}" placeholder="Nguyễn Văn A" th:classappend="${#fields.hasErrors('fullName')} ? 'has-error' : ''" />
+                        <span class="field-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="text" th:field="*{email}" placeholder="example@email.com" th:classappend="${#fields.hasErrors('email')} ? 'has-error' : ''" />
+                            <span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Số điện thoại *</label>
+                            <input type="text" th:field="*{phone}" placeholder="09xxxxxxxx" th:classappend="${#fields.hasErrors('phone')} ? 'has-error' : ''" />
+                            <span class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Số người lớn * <small th:text="'(Còn ' + ${tour.stockAdult} + ' vé)'"></small></label>
+                            <input type="number" id="adultInput" th:field="*{adultTickets}" min="0" th:classappend="${#fields.hasErrors('adultTickets')} ? 'has-error' : ''" />
+                            <span class="field-error" th:if="${#fields.hasErrors('adultTickets')}" th:errors="*{adultTickets}"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Số trẻ em * <small th:text="'(Còn ' + ${tour.stockChildren} + ' vé)'"></small></label>
+                            <input type="number" id="childInput" th:field="*{childrenTickets}" min="0" th:classappend="${#fields.hasErrors('childrenTickets')} ? 'has-error' : ''" />
+                            <span class="field-error" th:if="${#fields.hasErrors('childrenTickets')}" th:errors="*{childrenTickets}"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phương thức thanh toán *</label>
+                        <div class="payment-methods">
+                            <label class="payment-card">
+                                <input type="radio" th:field="*{paymentMethod}" value="Chuyển khoản ngân hàng" />
+                                <div class="payment-content">
+                                    <i class="fa-solid fa-building-columns"></i>
+                                    <span>Chuyển khoản ngân hàng</span>
+                                </div>
+                            </label>
+                            
+                            <label class="payment-card">
+                                <input type="radio" th:field="*{paymentMethod}" value="Thanh toán Momo" />
+                                <div class="payment-content">
+                                    <i class="fa-solid fa-wallet" style="color: #a82fa1;"></i>
+                                    <span>Ví Momo</span>
+                                </div>
+                            </label>
+
+                            <label class="payment-card">
+                                <input type="radio" th:field="*{paymentMethod}" value="Thanh toán qua Stripe (Visa/MasterCard)" />
+                                <div class="payment-content">
+                                    <i class="fa-brands fa-cc-stripe" style="color: #6366f1;"></i>
+                                    <span>Stripe (Thẻ Quốc tế)</span>
+                                </div>
+                            </label>
+
+                            <label class="payment-card">
+                                <input type="radio" th:field="*{paymentMethod}" value="Thanh toán tại văn phòng" />
+                                <div class="payment-content">
+                                    <i class="fa-solid fa-money-bill-wave" style="color: #10b981;"></i>
+                                    <span>Tiền mặt tại văn phòng</span>
+                                </div>
+                            </label>
+                        </div>
+                        <span class="field-error" th:if="${#fields.hasErrors('paymentMethod')}" th:errors="*{paymentMethod}"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mã giảm giá (Tùy chọn)</label>
+                        <div class="d-flex" style="gap: 10px; display: flex; flex-direction: column;">
+                            <input type="text" id="promoCodeInput" th:field="*{promoCode}" placeholder="Nhập mã giảm giá..." style="text-transform: uppercase;" th:classappend="${#fields.hasErrors('promoCode')} ? 'has-error' : ''" />
+                            <span class="field-error" style="color: #16a34a; display: none; font-weight: 600; margin-top: 5px;" id="promoMessage"></span>
+                            <span class="field-error" th:if="${#fields.hasErrors('promoCode')}" th:errors="*{promoCode}"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Yêu cầu đặc biệt (Không bắt buộc)</label>
+                        <textarea th:field="*{specialRequest}" rows="2" placeholder="Ví dụ: Ăn chay, Phòng cạnh nhau..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit">🚀 Xác nhận & Đặt Tour</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script for Dynamic Price Calculation -->
+    <script th:inline="javascript">
+        const priceAdult = /*[[${tour.priceAdult}]]*/ 0;
+        const priceChild = /*[[${tour.priceChildren}]]*/ 0;
+
+        const adultInput = document.getElementById('adultInput');
+        const childInput = document.getElementById('childInput');
+
+        const adultTxt = document.getElementById('adultCalcTxt');
+        const adultPrice = document.getElementById('adultCalcPrice');
+        const childTxt = document.getElementById('childCalcTxt');
+        const childPrice = document.getElementById('childCalcPrice');
+        const discountRow = document.getElementById('discountRow');
+        const discountPrice = document.getElementById('discountPrice');
+        const finalTotal = document.getElementById('finalTotal');
+        
+        const promoInput = document.getElementById('promoCodeInput');
+        const promoMsg = document.getElementById('promoMessage');
+
+        const PROMOS = {
+            'SUMMER20': 0.20,
+            'SALE10': 0.10,
+            'TEST50': 0.50,
+            'TET2020': 0.15
+        };
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN').format(amount) + ' ₫';
+        }
+
+        function calculateTotal() {
+            let adults = parseInt(adultInput.value) || 0;
+            let children = parseInt(childInput.value) || 0;
+
+            let totalAdultPrice = adults * priceAdult;
+            let totalChildPrice = children * priceChild;
+            let subTotal = totalAdultPrice + totalChildPrice;
+
+            adultTxt.textContent = adults + ' Người lớn';
+            adultPrice.textContent = formatCurrency(totalAdultPrice);
+            
+            childTxt.textContent = children + ' Trẻ em';
+            childPrice.textContent = formatCurrency(totalChildPrice);
+
+            let totalTickets = adults + children;
+            let discount = 0;
+            if (totalTickets >= 5) {
+                discount = subTotal * 0.1;
+            }
+
+            let promoCode = promoInput.value.trim().toUpperCase();
+            if (promoCode && PROMOS[promoCode]) {
+                let additional = subTotal * PROMOS[promoCode];
+                discount += additional;
+                promoMsg.style.display = 'block';
+                promoMsg.textContent = '✅ Đã áp dụng mã ' + promoCode + ' (Giảm ' + (PROMOS[promoCode] * 100) + '%)';
+                promoMsg.style.color = '#16a34a';
+            } else if (promoCode) {
+                promoMsg.style.display = 'block';
+                promoMsg.textContent = '❌ Mã giảm giá không hợp lệ';
+                promoMsg.style.color = '#dc2626';
+            } else {
+                promoMsg.style.display = 'none';
+            }
+
+            if (discount > subTotal) discount = subTotal; // Max discount is 100%
+
+            if (discount > 0) {
+                discountRow.style.display = 'flex';
+                document.querySelector('#discountRow span:first-child').textContent = 'Tổng giảm giá';
+                discountPrice.textContent = '- ' + formatCurrency(discount);
+            } else {
+                discountRow.style.display = 'none';
+            }
+
+            let finalAmount = subTotal - discount;
+            finalTotal.textContent = formatCurrency(finalAmount);
+        }
+
+        adultInput.addEventListener('input', calculateTotal);
+        childInput.addEventListener('input', calculateTotal);
+        promoInput.addEventListener('input', calculateTotal);
+
+        // Init on page load
+        calculateTotal();
+
+        // Validate on Submit
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            let adults = parseInt(adultInput.value) || 0;
+            let children = parseInt(childInput.value) || 0;
+            let stockAdult = /*[[${tour.stockAdult}]]*/ 0;
+            let stockChild = /*[[${tour.stockChildren}]]*/ 0;
+            let departureDateStr = /*[[${tour.departureDate}]]*/ '2026-01-01';
+            
+            // 1. Validate quantity > 0
+            if (adults <= 0 && children <= 0) {
+                e.preventDefault();
+                alert('Vui lòng chọn ít nhất 1 vé để tiếp tục đặt tour!');
+                return;
+            }
+            
+            // 2. Validate quantity <= stock
+            // if (adults > stockAdult) {
+            //     e.preventDefault();
+            //     alert('Số lượng vé người lớn vượt quá số chỗ trống (' + stockAdult + ')!');
+            //     return;
+            // }
+            // if (children > stockChild) {
+            //     e.preventDefault();
+            //     alert('Số lượng vé trẻ em vượt quá số chỗ trống (' + stockChild + ')!');
+            //     return;
+            // }
+            
+            // 3. Validate departure date (at least 2 days from today)
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const depDate = new Date(departureDateStr);
+            const diffTime = depDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays < 2) {
+                e.preventDefault();
+                alert('Lỗi: Chỉ được đặt tour trước ít nhất 2 ngày khởi hành. Vui lòng chọn tour khác.');
+                return;
+            }
+        });
+    </script>
+</body>
+</html>

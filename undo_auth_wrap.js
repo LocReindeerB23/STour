@@ -6,7 +6,7 @@ const files = [
 ];
 
 const oldNavbar = `    <nav class="navbar">
-        <a href="/" class="logo">Tuấn Vi Vu ✈️</a>
+        <a href="/" class="logo">STour ✈️</a>
         <div class="nav-links">
             <a href="/">Trang chủ</a>
             <a href="/tours">Danh sách Tour</a>

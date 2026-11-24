@@ -41,7 +41,16 @@ CREATE TABLE `accounts` (
 
 LOCK TABLES `accounts` WRITE;
 /*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
-INSERT INTO `accounts` VALUES (1,'Admin','admin@tuanvivu.com','admin','0909090909','ADMIN','active'),(2,'nguyen anh nam','nguyenanhtuank28@gmail.com','Anhtuan28112005#','0334523524','user','active'),(3,'Nguyen văn a','nguyenanhtuank11@gmail.com','Anhtuan28112005#','044454545','user','active'),(4,'Nguỹen van a','Nguyenanhtuan@gmail.com','$2a$10$/eRTrSjZ3IQIMe4HVCviJOb2ame.919Bc/OGaayiBuQ6AZQilvbsG','03345454','user','active'),(5,'Nguyễn văn nam','anhtuan@gmail.com','$2a$10$U6dVp/7DMrT9QY62UZ3RGu1Fj4IvH7UzB67Xqo42ZVj2A2O3Sa2b.','0345673128','user','active'),(6,'Vũ văn nam','nguyenanhtuank28hh@gmail.com','$2a$10$6kTO8RyXT2/RNVVlsAg9x.WmNyyPqMN8GhMatwwQMZtwc8tiEXTJ.','0345673127','user','active'),(7,'Nguyễn văn nam','NguyenNam@gmail.com','$2a$10$om/pLCtqr7vM5qe1EpIukuca2/KTIKAt0P8inAHzl5j2mKd39AgxK','0345435346','user','active'),(8,'NguyenVanNam','nguyenanhtuank2855@gmail.com','$2a$10$mu/X5pmj4iG7O4m277BtJOpLeekTJgE8Q7L/EnBvXyM5FkhMqoceC','0333333333','user','active'),(9,'Nguyễn Anh Tuấn','nguyenanhtuank18gmail.com','$2a$10$NHsFLlgubQmsZP6DpJjV.eOHjZhV4Z4WTMTcXNakhezKWvVedmjSG','0231242342','user','active'),(10,'Nguyễn Anh Tuấn','nguyenanhtuank28gmail.com','$2a$10$3MrEPzSdhl5Ernhif/zcIOJyM7t7.npx3HXNLvZiYbOHtqWQDwNZq','0334545433','user','active');
+INSERT INTO `accounts` VALUES (1,'Admin','admin@stour.com','admin','0909090909','ADMIN','active'),
+                              (2,'nguyen an nam','nguyenannam@gmail.com','Annam123456#','0334523524','user','active'),
+                              (3,'Nguyen văn a','nguyenvana@gmail.com','Vana123456#','044454545','user','active'),
+                              (4,'Nguỹen van a','Nguyenanhtuan@gmail.com','$2a$10$/eRTrSjZ3IQIMe4HVCviJOb2ame.919Bc/OGaayiBuQ6AZQilvbsG','03345454','user','active'),
+                              (5,'Nguyễn văn nam','anhtuan@gmail.com','$2a$10$U6dVp/7DMrT9QY62UZ3RGu1Fj4IvH7UzB67Xqo42ZVj2A2O3Sa2b.','0345673128','user','active'),
+                              (6,'Vũ văn nam','nguyenanhtuank28hh@gmail.com','$2a$10$6kTO8RyXT2/RNVVlsAg9x.WmNyyPqMN8GhMatwwQMZtwc8tiEXTJ.','0345673127','user','active'),
+                              (7,'Nguyễn văn nam','NguyenNam@gmail.com','$2a$10$om/pLCtqr7vM5qe1EpIukuca2/KTIKAt0P8inAHzl5j2mKd39AgxK','0345435346','user','active'),
+                              (8,'NguyenVanNam','nguyenanhtuank2855@gmail.com','$2a$10$mu/X5pmj4iG7O4m277BtJOpLeekTJgE8Q7L/EnBvXyM5FkhMqoceC','0333333333','user','active'),
+                              (9,'Nguyễn Anh Tuấn','nguyenanhtuank18gmail.com','$2a$10$NHsFLlgubQmsZP6DpJjV.eOHjZhV4Z4WTMTcXNakhezKWvVedmjSG','0231242342','user','active'),
+                              (10,'Nguyễn Anh Tuấn','nguyenanhtuank28gmail.com','$2a$10$3MrEPzSdhl5Ernhif/zcIOJyM7t7.npx3HXNLvZiYbOHtqWQDwNZq','0334545433','user','active');
 /*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
 UNLOCK TABLES;
 

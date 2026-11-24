@@ -32,7 +32,7 @@ public class DataInitializer {
                 "Phòng Suite trên Du thuyền\nĂn hải sản cao cấp\nHướng dẫn viên nhiệt tình", "Đồ uống có cồn\nChi phí không có trong mục bao gồm", "Hủy trước 10 ngày miễn phí."));
                 
             // Create default admin account
-            accountRepository.save(new com.example.tourbooking.entity.Account("Admin", "admin@tuanvivu.com", "admin", "0909090909", "ADMIN", "active"));
+            accountRepository.save(new com.example.tourbooking.entity.Account("Admin", "admin@stour.com", "admin", "0909090909", "ADMIN", "active"));
         };
     }
 }

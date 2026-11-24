@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Tour - STour</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome 6 để hiển thị icon phương thức thanh toán -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root { --primary: #0ea5e9; --primary-hover: #0284c7; --dark: #0f172a; --light: #f8fafc; --gray: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--light); color: var(--dark); display: flex; flex-direction: column; min-height: 100vh; }
+
+        .navbar { background: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); text-decoration: none; }
+
+        .container { max-width: 1000px; margin: 3rem auto; padding: 0 20px; flex-grow: 1; }
+
+        .layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; background: white; border-radius: 20px; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); overflow: hidden; }
+
+        /* Summary Sidebar */
+        .tour-info { background: var(--dark); color: white; padding: 3rem 2rem; display: flex; flex-direction: column; }
+        .tour-info h2 { font-size: 1.8rem; margin-bottom: 1rem; color: #38bdf8; line-height: 1.3; }
+        .info-row { margin-bottom: 1.5rem; }
+        .info-label { font-size: 0.9rem; color: #94a3b8; display: block; margin-bottom: 0.25rem; }
+        .info-val { font-size: 1.1rem; font-weight: 600; }
+
+        .price-breakdown { background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 12px; margin-top: auto; }
+        .calc-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; color: #cbd5e1; }
+        .divider { height: 1px; background: rgba(255,255,255,0.2); margin: 1rem 0; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; }
+        .total-val { font-size: 1.8rem; font-weight: 800; color: #38bdf8; }
+
+        /* Form Section */
+        .booking-form { padding: 3rem 2.5rem; }
+        .form-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 8px; }
+
+        .form-group { margin-bottom: 1.25rem; }
+        label { display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.95rem; color: var(--dark); }
+        input, select, textarea { width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s; outline: none; background: #f8fafc; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2); background: white; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+        /* Validation UI */
+        .error-alert { background: #fee2e2; border-left: 4px solid #ef4444; color: #b91c1c; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 500; }
+        .field-error { color: #ef4444; font-size: 0.85rem; margin-top: 5px; display: block; font-weight: 500; }
+        input.has-error, select.has-error, .payment-select-trigger.has-error { border-color: #ef4444; background: #fef2f2; }
+
+        .btn-submit { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; margin-top: 1.5rem; box-shadow: 0 4px 14px rgba(14, 165, 233, 0.4); }
+        .btn-submit:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5); }
+
+        /* Floating Dropdown Select cho Phương thức thanh toán */
+        .payment-dropdown {
+            position: relative;
+            width: 100%;
+            user-select: none;
+        }
+        .payment-select-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px 16px;
+            background: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .payment-select-trigger:hover {
+            border-color: #94a3b8;
+            background: #ffffff;
+        }
+        .payment-dropdown.open .payment-select-trigger {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+        }
+        .selected-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.98rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        .selected-display.placeholder {
+            color: #64748b;
+            font-weight: 500;
+        }
+        .selected-display i {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+        .chevron-icon {
+            color: #64748b;
+            font-size: 0.9rem;
+            transition: transform 0.25s ease;
+        }
+        .payment-dropdown.open .chevron-icon {
+            transform: rotate(180deg);
+            color: var(--primary);
+        }
+
+        /* Danh sách ô nổi (Floating Menu) */
+        .payment-floating-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 15px 35px -5px rgba(15, 23, 42, 0.16), 0 4px 10px -2px rgba(15, 23, 42, 0.06);
+            padding: 6px;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .payment-dropdown.open .payment-floating-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .payment-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+        .payment-option:hover {
+            background-color: #f1f5f9;
+        }
+        .payment-option.selected {
+            background-color: #f0f9ff;
+        }
+        .option-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .option-icon-box {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+        .option-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--dark);
+            display: block;
+        }
+        .option-desc {
+            font-size: 0.8rem;
+            color: #64748b;
+            display: block;
+            margin-top: 2px;
+        }
+        .check-mark {
+            color: var(--primary);
+            font-size: 1rem;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+        .payment-option.selected .check-mark {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) { .layout { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="logo">STour ✈️</a>
+    <div class="nav-links">
+        <a href="/tours" style="text-decoration: none; color: var(--dark); font-weight: 500; margin-right: 2rem;">← Hủy Đặt</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="layout">
+        <!-- Sidebar: Tour Summary & Dynamic Calculation -->
+        <div class="tour-info">
+            <span style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 5px;">Tour bạn chọn</span>
+            <h2 th:text="${tour.name}">Tên Tour</h2>
+
+            <div class="info-row">
+                <span class="info-label">Khởi hành</span>
+                <span class="info-val">📍 <span th:text="${tour.destination}"></span> - 📅 <span th:text="${tour.departureDate}"></span></span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Đơn giá</span>
+                <span class="info-val">Người lớn: <span th:text="${#numbers.formatDecimal(tour.priceAdult, 0, 'COMMA', 0, 'POINT')}"></span> ₫</span><br>
+                <span class="info-val">Trẻ em: <span th:text="${#numbers.formatDecimal(tour.priceChildren, 0, 'COMMA', 0, 'POINT')}"></span> ₫</span>
+            </div>
+
+            <!-- Dynamic Price Breakdown -->
+            <div class="price-breakdown">
+                <div class="calc-row">
+                    <span id="adultCalcTxt">1 Người lớn</span>
+                    <span id="adultCalcPrice">0 ₫</span>
+                </div>
+                <div class="calc-row">
+                    <span id="childCalcTxt">0 Trẻ em</span>
+                    <span id="childCalcPrice">0 ₫</span>
+                </div>
+                <div class="calc-row" style="color: #4ade80; display: none;" id="discountRow">
+                    <span>Giảm giá (Từ 5 vé giảm 10%)</span>
+                    <span id="discountPrice">- 0 ₫</span>
+                </div>
+                <div class="divider"></div>
+                <div class="total-row">
+                    <span>Tổng tiền:</span>
+                    <span class="total-val" id="finalTotal">0 ₫</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Form with Validation -->
+        <div class="booking-form">
+            <h3 class="form-title">📝 Nhập thông tin liên hệ</h3>
+
+            <div th:if="${error != null}" class="error-alert">
+                ⚠️ <span th:text="${error}"></span>
+            </div>
+
+            <form th:action="@{/orders}" th:object="${orderDTO}" method="post">
+                <input type="hidden" th:field="*{tourId}" />
+
+                <div class="form-group">
+                    <label>Họ và Tên *</label>
+                    <input type="text" th:field="*{fullName}" placeholder="Nguyễn Văn A" th:classappend="${#fields.hasErrors('fullName')} ? 'has-error' : ''" />
+                    <span class="field-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="text" th:field="*{email}" placeholder="example@email.com" th:classappend="${#fields.hasErrors('email')} ? 'has-error' : ''" />
+                        <span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại *</label>
+                        <input type="text" th:field="*{phone}" placeholder="09xxxxxxxx" th:classappend="${#fields.hasErrors('phone')} ? 'has-error' : ''" />
+                        <span class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Số người lớn * <small th:text="'(Còn ' + ${tour.stockAdult} + ' vé)'"></small></label>
+                        <input type="number" id="adultInput" th:field="*{adultTickets}" min="0" th:classappend="${#fields.hasErrors('adultTickets')} ? 'has-error' : ''" />
+                        <span class="field-error" th:if="${#fields.hasErrors('adultTickets')}" th:errors="*{adultTickets}"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Số trẻ em * <small th:text="'(Còn ' + ${tour.stockChildren} + ' vé)'"></small></label>
+                        <input type="number" id="childInput" th:field="*{childrenTickets}" min="0" th:classappend="${#fields.hasErrors('childrenTickets')} ? 'has-error' : ''" />
+                        <span class="field-error" th:if="${#fields.hasErrors('childrenTickets')}" th:errors="*{childrenTickets}"></span>
+                    </div>
+                </div>
+
+                <!-- Phương thức thanh toán dạng chọn ô nổi -->
+                <div class="form-group">
+                    <label>Phương thức thanh toán *</label>
+                    <!-- Input ẩn giữ giá trị gửi về Spring Boot -->
+                    <input type="hidden" id="paymentMethodInput" th:field="*{paymentMethod}" />
+
+                    <div class="payment-dropdown" id="paymentDropdown">
+                        <div class="payment-select-trigger" id="paymentTrigger" th:classappend="${#fields.hasErrors('paymentMethod')} ? 'has-error' : ''">
+                            <div class="selected-display placeholder" id="selectedPaymentDisplay">
+                                <i class="fa-regular fa-credit-card"></i>
+                                <span>-- Chọn phương thức thanh toán --</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down chevron-icon"></i>
+                        </div>
+
+                        <!-- Menu nổi -->
+                        <div class="payment-floating-menu" id="paymentMenu">
+                            <div class="payment-option" data-value="Chuyển khoản ngân hàng" data-label="Chuyển khoản ngân hàng" data-icon="fa-solid fa-building-columns" data-color="#0ea5e9">
+                                <div class="option-left">
+                                    <div class="option-icon-box" style="color: #0ea5e9;"><i class="fa-solid fa-building-columns"></i></div>
+                                    <div>
+                                        <span class="option-title">Chuyển khoản ngân hàng</span>
+                                        <span class="option-desc">Quét mã QR / Chuyển khoản nhanh 24/7</span>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-circle-check check-mark"></i>
+                            </div>
+
+                            <div class="payment-option" data-value="Thanh toán Momo" data-label="Ví Momo" data-icon="fa-solid fa-wallet" data-color="#a82fa1">
+                                <div class="option-left">
+                                    <div class="option-icon-box" style="color: #a82fa1;"><i class="fa-solid fa-wallet"></i></div>
+                                    <div>
+                                        <span class="option-title">Ví Momo</span>
+                                        <span class="option-desc">Thanh toán qua ứng dụng ví điện tử Momo</span>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-circle-check check-mark"></i>
+                            </div>
+
+                            <div class="payment-option" data-value="Thanh toán qua Stripe (Visa/MasterCard)" data-label="Stripe (Thẻ Quốc tế)" data-icon="fa-brands fa-cc-stripe" data-color="#6366f1">
+                                <div class="option-left">
+                                    <div class="option-icon-box" style="color: #6366f1;"><i class="fa-brands fa-cc-stripe"></i></div>
+                                    <div>
+                                        <span class="option-title">Stripe (Thẻ Quốc tế)</span>
+                                        <span class="option-desc">Hỗ trợ thẻ Visa, MasterCard, JCB</span>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-circle-check check-mark"></i>
+                            </div>
+
+                            <div class="payment-option" data-value="Thanh toán tại văn phòng" data-label="Tiền mặt tại văn phòng" data-icon="fa-solid fa-money-bill-wave" data-color="#10b981">
+                                <div class="option-left">
+                                    <div class="option-icon-box" style="color: #10b981;"><i class="fa-solid fa-money-bill-wave"></i></div>
+                                    <div>
+                                        <span class="option-title">Tiền mặt tại văn phòng</span>
+                                        <span class="option-desc">Thanh toán trực tiếp tại quầy giao dịch STour</span>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-circle-check check-mark"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="field-error" th:if="${#fields.hasErrors('paymentMethod')}" th:errors="*{paymentMethod}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label>Mã giảm giá (Tùy chọn)</label>
+                    <div class="d-flex" style="gap: 10px; display: flex; flex-direction: column;">
+                        <input type="text" id="promoCodeInput" th:field="*{promoCode}" placeholder="Nhập mã giảm giá..." style="text-transform: uppercase;" th:classappend="${#fields.hasErrors('promoCode')} ? 'has-error' : ''" />
+                        <span class="field-error" style="color: #16a34a; display: none; font-weight: 600; margin-top: 5px;" id="promoMessage"></span>
+                        <span class="field-error" th:if="${#fields.hasErrors('promoCode')}" th:errors="*{promoCode}"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Yêu cầu đặc biệt (Không bắt buộc)</label>
+                    <textarea th:field="*{specialRequest}" rows="2" placeholder="Ví dụ: Ăn chay, Phòng cạnh nhau..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">🚀 Xác nhận & Đặt Tour</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Script for Dynamic Price Calculation & Floating Payment Select -->
+<script th:inline="javascript">
+    // --- XỬ LÝ Ô CHỌN NỔI PHƯƠNG THỨC THANH TOÁN ---
+    const paymentDropdown = document.getElementById('paymentDropdown');
+    const paymentTrigger = document.getElementById('paymentTrigger');
+    const paymentInput = document.getElementById('paymentMethodInput');
+    const selectedDisplay = document.getElementById('selectedPaymentDisplay');
+    const paymentOptions = document.querySelectorAll('.payment-option');
+
+    function applyPaymentSelection(optionEl) {
+        const val = optionEl.getAttribute('data-value');
+        const label = optionEl.getAttribute('data-label');
+        const icon = optionEl.getAttribute('data-icon');
+        const color = optionEl.getAttribute('data-color');
+
+        paymentInput.value = val;
+        selectedDisplay.classList.remove('placeholder');
+        selectedDisplay.innerHTML = `<i class="${icon}" style="color: ${color};"></i><span>${label}</span>`;
+
+        paymentOptions.forEach(opt => opt.classList.remove('selected'));
+        optionEl.classList.add('selected');
+    }
+
+    // Khôi phục lựa chọn cũ nếu form bị reload do lỗi validation
+    if (paymentInput.value) {
+        const matchedOption = Array.from(paymentOptions).find(opt => opt.getAttribute('data-value') === paymentInput.value);
+        if (matchedOption) {
+            applyPaymentSelection(matchedOption);
+        }
+    }
+
+    paymentTrigger.addEventListener('click', function () {
+        paymentDropdown.classList.toggle('open');
+    });
+
+    paymentOptions.forEach(option => {
+        option.addEventListener('click', function () {
+            applyPaymentSelection(this);
+            paymentDropdown.classList.remove('open');
+        });
+    });
+
+    // Đóng ô nổi khi bấm ra ngoài
+    document.addEventListener('click', function (e) {
+        if (!paymentDropdown.contains(e.target)) {
+            paymentDropdown.classList.remove('open');
+        }
+    });
+
+    // --- TÍNH GIÁ ĐỘNG ---
+    const priceAdult = /*[[${tour.priceAdult}]]*/ 0;
+    const priceChild = /*[[${tour.priceChildren}]]*/ 0;
+
+    const adultInput = document.getElementById('adultInput');
+    const childInput = document.getElementById('childInput');
+
+    const adultTxt = document.getElementById('adultCalcTxt');
+    const adultPrice = document.getElementById('adultCalcPrice');
+    const childTxt = document.getElementById('childCalcTxt');
+    const childPrice = document.getElementById('childCalcPrice');
+    const discountRow = document.getElementById('discountRow');
+    const discountPrice = document.getElementById('discountPrice');
+    const finalTotal = document.getElementById('finalTotal');
+
+    const promoInput = document.getElementById('promoCodeInput');
+    const promoMsg = document.getElementById('promoMessage');
+
+    const PROMOS = {
+        'SUMMER20': 0.20,
+        'SALE10': 0.10,
+        'TEST50': 0.50,
+        'TET2020': 0.15
+    };
+
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('vi-VN').format(amount) + ' ₫';
+    }
+
+    function calculateTotal() {
+        let adults = parseInt(adultInput.value) || 0;
+        let children = parseInt(childInput.value) || 0;
+
+        let totalAdultPrice = adults * priceAdult;
+        let totalChildPrice = children * priceChild;
+        let subTotal = totalAdultPrice + totalChildPrice;
+
+        adultTxt.textContent = adults + ' Người lớn';
+        adultPrice.textContent = formatCurrency(totalAdultPrice);
+
+        childTxt.textContent = children + ' Trẻ em';
+        childPrice.textContent = formatCurrency(totalChildPrice);
+
+        let totalTickets = adults + children;
+        let discount = 0;
+        if (totalTickets >= 5) {
+            discount = subTotal * 0.1;
+        }
+
+        let promoCode = promoInput.value.trim().toUpperCase();
+        if (promoCode && PROMOS[promoCode]) {
+            let additional = subTotal * PROMOS[promoCode];
+            discount += additional;
+            promoMsg.style.display = 'block';
+            promoMsg.textContent = '✅ Đã áp dụng mã ' + promoCode + ' (Giảm ' + (PROMOS[promoCode] * 100) + '%)';
+            promoMsg.style.color = '#16a34a';
+        } else if (promoCode) {
+            promoMsg.style.display = 'block';
+            promoMsg.textContent = '❌ Mã giảm giá không hợp lệ';
+            promoMsg.style.color = '#dc2626';
+        } else {
+            promoMsg.style.display = 'none';
+        }
+
+        if (discount > subTotal) discount = subTotal;
+
+        if (discount > 0) {
+            discountRow.style.display = 'flex';
+            document.querySelector('#discountRow span:first-child').textContent = 'Tổng giảm giá';
+            discountPrice.textContent = '- ' + formatCurrency(discount);
+        } else {
+            discountRow.style.display = 'none';
+        }
+
+        let finalAmount = subTotal - discount;
+        finalTotal.textContent = formatCurrency(finalAmount);
+    }
+
+    adultInput.addEventListener('input', calculateTotal);
+    childInput.addEventListener('input', calculateTotal);
+    promoInput.addEventListener('input', calculateTotal);
+
+    // Init on page load
+    calculateTotal();
+
+    // Validate on Submit
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        let adults = parseInt(adultInput.value) || 0;
+        let children = parseInt(childInput.value) || 0;
+        let departureDateStr = /*[[${tour.departureDate}]]*/ '2026-01-01';
+
+        if (adults <= 0 && children <= 0) {
+            e.preventDefault();
+            alert('Vui lòng chọn ít nhất 1 vé để tiếp tục đặt tour!');
+            return;
+        }
+
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const depDate = new Date(departureDateStr);
+        const diffTime = depDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays < 2) {
+            e.preventDefault();
+            alert('Lỗi: Chỉ được đặt tour trước ít nhất 2 ngày khởi hành. Vui lòng chọn tour khác.');
+            return;
+        }
+    });
+</script>
+</body>
+</html>

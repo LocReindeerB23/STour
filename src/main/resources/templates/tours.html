@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh Sách Tour - STour</title>
+    <title>Danh Sách Tour - Tuấn Vi Vu</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome 6 -->
@@ -16,178 +16,89 @@
         .tour-card:hover { transform: translateY(-5px); box-shadow: 0 1rem 3rem rgba(0,0,0,.15)!important; }
         .card-img-top { height: 220px; object-fit: cover; }
         .price-text { font-size: 1.4rem; font-weight: 800; color: #0ea5e9; }
-
-        /* Thanh tìm kiếm kiểu Google */
-        .gg-search-wrapper {
-            position: relative;
-        }
-        .gg-input-group {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .gg-input-group .search-icon {
-            position: absolute;
-            left: 14px;
-            color: #94a3b8;
-            pointer-events: none;
-        }
-        .gg-input-group input {
-            padding-left: 38px;
-            padding-right: 36px;
-            border-radius: 0.75rem;
-            border: 1px solid #cbd5e1;
-            transition: all 0.2s ease;
-        }
-        .gg-input-group input:focus {
-            border-color: #0ea5e9;
-            box-shadow: 0 4px 16px rgba(14, 165, 233, 0.15);
-        }
-        /* Khi dropdown mở, bo tròn liền mạch giống Google */
-        .gg-search-wrapper.open .gg-input-group input {
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
-            border-color: #cbd5e1;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-        .gg-clear-btn {
-            position: absolute;
-            right: 12px;
-            background: none;
-            border: none;
-            color: #94a3b8;
-            cursor: pointer;
-            display: none;
-            padding: 0 4px;
-        }
-        .gg-clear-btn:hover { color: #334155; }
-        .gg-clear-btn.visible { display: block; }
-
-        /* Hộp gợi ý nổi */
-        .gg-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            z-index: 1050;
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-top: 1px solid #f1f5f9;
-            border-bottom-left-radius: 0.75rem;
-            border-bottom-right-radius: 0.75rem;
-            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
-            overflow: hidden;
-            display: none;
-        }
-        .gg-search-wrapper.open .gg-dropdown {
-            display: block;
-        }
-        .gg-item {
-            padding: 0.65rem 1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.95rem;
-            color: #1e293b;
-        }
-        .gg-item:hover,
-        .gg-item.active {
-            background-color: #f1f5f9;
-        }
-        .gg-item i {
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-        .gg-item .match-text {
-            font-weight: 700;
-            color: #0284c7;
-        }
     </style>
 </head>
 <body>
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm mb-4">
-    <div class="container">
-        <a class="navbar-brand fw-bold text-primary" href="/"><i class="fa-solid fa-plane-departure me-2"></i>STour</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item"><a class="nav-link fw-medium" href="/">Trang chủ</a></li>
-                <li class="nav-item"><a class="nav-link active fw-medium" href="/tours">Khám phá</a></li>
-
-                <li class="nav-item" th:if="${session.user != null}">
-                    <a class="nav-link fw-medium" href="/my-bookings">Chuyến đi của tôi</a>
-                </li>
-
-                <li class="nav-item ms-lg-3" th:if="${session.user == null}">
-                    <a class="btn btn-outline-primary rounded-pill px-4 me-2" href="/register">Đăng ký</a>
-                    <a class="btn btn-primary rounded-pill px-4" href="/login">Đăng nhập</a>
-                </li>
-
-                <li class="nav-item dropdown ms-lg-3" th:if="${session.user != null}">
-                    <a class="nav-link dropdown-toggle fw-bold text-dark" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fa-solid fa-circle-user me-1 text-primary"></i> <span th:text="${session.user.fullName}"></span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                        <li><a class="dropdown-item fw-medium" href="/profile"><i class="fa-solid fa-user me-2"></i>Hồ sơ của tôi</a></li>
-                        <li><a class="dropdown-item text-danger fw-medium" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</a></li>
-                    </ul>
-                </li>
+  <div class="container">
+    <a class="navbar-brand fw-bold text-primary" href="/"><i class="fa-solid fa-plane-departure me-2"></i>Tuấn Vi Vu</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item"><a class="nav-link fw-medium" href="/">Trang chủ</a></li>
+        <li class="nav-item"><a class="nav-link active fw-medium" href="/tours">Khám phá</a></li>
+        
+        <li class="nav-item" th:if="${session.user != null}">
+            <a class="nav-link fw-medium" href="/my-bookings">Chuyến đi của tôi</a>
+        </li>
+        
+        <li class="nav-item ms-lg-3" th:if="${session.user == null}">
+            <a class="btn btn-outline-primary rounded-pill px-4 me-2" href="/register">Đăng ký</a>
+            <a class="btn btn-primary rounded-pill px-4" href="/login">Đăng nhập</a>
+        </li>
+        
+        <li class="nav-item dropdown ms-lg-3" th:if="${session.user != null}">
+            <a class="nav-link dropdown-toggle fw-bold text-dark" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                <i class="fa-solid fa-circle-user me-1 text-primary"></i> <span th:text="${session.user.fullName}"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                <li><a class="dropdown-item fw-medium" href="/profile"><i class="fa-solid fa-user me-2"></i>Hồ sơ của tôi</a></li>
+                <li><a class="dropdown-item text-danger fw-medium" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</a></li>
             </ul>
-        </div>
+        </li>
+      </ul>
     </div>
+  </div>
 </nav>
 
 <div class="container pb-5">
-
+    
     <!-- Search Bar -->
     <div class="card shadow-sm border-0 rounded-4 mb-5 p-3">
         <div class="card-body">
-            <form id="searchForm" action="/tours" method="get" class="row g-3 align-items-end">
-                <div class="col-md-6">
+            <form action="/tours" method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
                     <label class="form-label fw-bold text-muted small"><i class="fa-solid fa-location-dot me-1"></i>Địa điểm</label>
-                    <div id="ggSearchWrapper" class="gg-search-wrapper">
-                        <div class="gg-input-group">
-                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                            <input type="text" id="destinationInput" class="form-control" name="destination" th:value="${destination}" placeholder="Nhập tên địa điểm (VD: Đà Nẵng, Phú Quốc...)" autocomplete="off">
-                            <button type="button" id="clearBtn" class="gg-clear-btn" title="Xóa">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-                        </div>
-                        <div id="ggDropdown" class="gg-dropdown"></div>
-                    </div>
+                    <input type="text" class="form-control" name="destination" th:value="${destination}" placeholder="Bạn muốn đi đâu?">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label fw-bold text-muted small"><i class="fa-solid fa-layer-group me-1"></i>Thể loại</label>
-                    <select class="form-select rounded-3" name="category">
+                    <select class="form-select" name="category">
                         <option value="">Tất cả</option>
                         <option value="Biển" th:selected="${category == 'Biển'}">Biển</option>
                         <option value="Núi" th:selected="${category == 'Núi'}">Núi</option>
                         <option value="Nghỉ dưỡng" th:selected="${category == 'Nghỉ dưỡng'}">Nghỉ dưỡng</option>
-                        <option value="Khám phá" th:selected="${category == 'Khám phá'}">Khám phá</option>
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100 fw-bold rounded-3"><i class="fa-solid fa-magnifying-glass me-2"></i>Tìm kiếm</button>
+                    <label class="form-label fw-bold text-muted small"><i class="fa-solid fa-money-bill me-1"></i>Giá từ</label>
+                    <input type="number" class="form-control" name="minPrice" th:value="${minPrice}" placeholder="VNĐ">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold text-muted small"><i class="fa-solid fa-money-bill me-1"></i>Giá đến</label>
+                    <input type="number" class="form-control" name="maxPrice" th:value="${maxPrice}" placeholder="VNĐ">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold"><i class="fa-solid fa-magnifying-glass me-2"></i>Tìm kiếm</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Empty State -->
-    <div th:if="${tours.isEmpty()}" class="text-center py-5">
+    <div th:if="${tours.empty}" class="text-center py-5">
         <i class="fa-regular fa-face-frown display-1 text-muted mb-3"></i>
         <h3 class="fw-bold">Không tìm thấy tour nào phù hợp!</h3>
         <p class="text-muted">Vui lòng thử lại với các tiêu chí tìm kiếm khác.</p>
     </div>
 
     <!-- Tour Grid -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${tours.isEmpty()}">
-
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${tours.empty}">
+        
         <!-- Tour Item -->
         <div class="col" th:each="tour : ${tours}">
             <div class="card h-100 shadow-sm border-0 rounded-4 tour-card overflow-hidden">
@@ -196,14 +107,14 @@
                     <span class="badge bg-primary position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill shadow-sm" th:text="${tour.category}">Category</span>
                 </div>
                 <div class="card-body d-flex flex-column p-4">
-                    <div class="text-primary fw-bold text-uppercase small mb-2"><i class="fa-solid fa-location-dot me-1"></i><span class="tour-destination-data" th:text="${tour.destination != null ? tour.destination : 'Điểm đến thú vị'}"></span></div>
+                    <div class="text-primary fw-bold text-uppercase small mb-2"><i class="fa-solid fa-location-dot me-1"></i><span th:text="${tour.destination != null ? tour.destination : 'Điểm đến thú vị'}"></span></div>
                     <h5 class="card-title fw-bold mb-3" th:text="${tour.name}">Tên Tour</h5>
-
+                    
                     <div class="mb-4 text-muted small">
                         <div class="mb-2"><i class="fa-regular fa-calendar me-2"></i>Khởi hành: <b class="text-dark" th:text="${tour.departureDate}"></b></div>
                         <div><i class="fa-solid fa-user-group me-2"></i>Còn trống: <b class="text-dark" th:text="${tour.stockAdult}"></b> chỗ</div>
                     </div>
-
+                    
                     <div class="mt-auto d-flex justify-content-between align-items-end pt-3 border-top">
                         <div>
                             <span class="text-muted small d-block mb-1">Chỉ từ</span>
@@ -220,159 +131,5 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Script Google-style Autocomplete -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const wrapper = document.getElementById("ggSearchWrapper");
-        const input = document.getElementById("destinationInput");
-        const dropdown = document.getElementById("ggDropdown");
-        const clearBtn = document.getElementById("clearBtn");
-        const searchForm = document.getElementById("searchForm");
-
-        // 1. Tự động gom danh sách địa điểm từ các thẻ tour đang hiển thị + danh sách mặc định
-        const defaultPlaces = [
-            "Khánh Hòa", "Lâm Đồng", "Quảng Ninh", "Phú Quốc", "Lào Cai",
-            "Maldives", "Đà Nẵng", "Indonesia", "Bình Định", "Bangkok",
-            "Nha Trang", "Đà Lạt", "Hạ Long", "Sapa", "Hội An", "Quy Nhơn", "Phú Yên"
-        ];
-        const domPlaces = Array.from(document.querySelectorAll(".tour-destination-data"))
-            .map(el => el.textContent.trim())
-            .filter(Boolean);
-
-        // Loại bỏ trùng lặp
-        const allDestinations = [...new Set([...domPlaces, ...defaultPlaces])];
-
-        let activeIndex = -1;
-        let currentMatches = [];
-
-        function normalizeText(str) {
-            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase();
-        }
-
-        // In đậm phần ký tự khớp với từ khóa đang gõ (giống Google)
-        function highlightMatch(text, query) {
-            const normText = normalizeText(text);
-            const normQuery = normalizeText(query);
-            const startIndex = normText.indexOf(normQuery);
-
-            if (startIndex === -1 || !query) return text;
-
-            const before = text.slice(0, startIndex);
-            const match = text.slice(startIndex, startIndex + query.length);
-            const after = text.slice(startIndex + query.length);
-            return `${before}<span class="match-text">${match}</span>${after}`;
-        }
-
-        function closeDropdown() {
-            wrapper.classList.remove("open");
-            activeIndex = -1;
-        }
-
-        function selectItem(value) {
-            input.value = value;
-            updateClearButton();
-            closeDropdown();
-            searchForm.submit(); // Chọn xong tự động tìm kiếm luôn như Google
-        }
-
-        function updateClearButton() {
-            if (input.value.trim().length > 0) {
-                clearBtn.classList.add("visible");
-            } else {
-                clearBtn.classList.remove("visible");
-            }
-        }
-
-        // Chỉ bung gợi ý khi người dùng gõ chữ
-        input.addEventListener("input", function () {
-            const rawVal = input.value;
-            const trimmed = rawVal.trim();
-            updateClearButton();
-
-            if (trimmed.length === 0) {
-                closeDropdown();
-                return;
-            }
-
-            const normQuery = normalizeText(trimmed);
-            currentMatches = allDestinations
-                .filter(place => normalizeText(place).includes(normQuery))
-                .slice(0, 6); // Giới hạn tối đa 6 gợi ý gọn gàng như Google
-
-            if (currentMatches.length === 0) {
-                closeDropdown();
-                return;
-            }
-
-            dropdown.innerHTML = "";
-            activeIndex = -1;
-
-            currentMatches.forEach((place, idx) => {
-                const item = document.createElement("div");
-                item.className = "gg-item";
-                item.innerHTML = `
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <span>${highlightMatch(place, trimmed)}</span>
-                `;
-                item.addEventListener("mousedown", function (e) {
-                    e.preventDefault(); // Tránh mất focus trước khi click
-                    selectItem(place);
-                });
-                dropdown.appendChild(item);
-            });
-
-            wrapper.classList.add("open");
-        });
-
-        // Điều hướng bằng phím mũi tên Lên / Xuống / Enter / Esc
-        input.addEventListener("keydown", function (e) {
-            const items = dropdown.querySelectorAll(".gg-item");
-            if (!wrapper.classList.contains("open") || items.length === 0) return;
-
-            if (e.key === "ArrowDown") {
-                e.preventDefault();
-                activeIndex = (activeIndex + 1) % items.length;
-                updateActiveItem(items);
-            } else if (e.key === "ArrowUp") {
-                e.preventDefault();
-                activeIndex = (activeIndex - 1 + items.length) % items.length;
-                updateActiveItem(items);
-            } else if (e.key === "Enter" && activeIndex >= 0) {
-                e.preventDefault();
-                selectItem(currentMatches[activeIndex]);
-            } else if (e.key === "Escape") {
-                closeDropdown();
-            }
-        });
-
-        function updateActiveItem(items) {
-            items.forEach((el, i) => {
-                el.classList.toggle("active", i === activeIndex);
-            });
-            if (activeIndex >= 0) {
-                input.value = currentMatches[activeIndex];
-            }
-        }
-
-        // Nút X xóa nhanh
-        clearBtn.addEventListener("click", function () {
-            input.value = "";
-            updateClearButton();
-            closeDropdown();
-            input.focus();
-        });
-
-        // Ẩn khi bấm ra ngoài
-        document.addEventListener("click", function (e) {
-            if (!wrapper.contains(e.target)) {
-                closeDropdown();
-            }
-        });
-
-        // Hiển thị nút X nếu trang tải lại đang có sẵn từ khóa
-        updateClearButton();
-    });
-</script>
 </body>
 </html>

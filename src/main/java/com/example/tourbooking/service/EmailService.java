@@ -11,7 +11,7 @@ public class EmailService {
         System.out.println("Tới: " + toEmail);
         System.out.println("Mã đơn hàng: " + orderCode);
         System.out.println("Tour: " + tourName);
-        System.out.println("Cảm ơn quý khách đã tin tưởng và đặt tour tại Tuấn Vi Vu!");
+        System.out.println("Cảm ơn quý khách đã tin tưởng và đặt tour tại STour!");
         System.out.println("==========================================");
     }
 }

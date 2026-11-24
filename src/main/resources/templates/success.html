@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đặt Thành Công - Tuấn Vi Vu</title>
+    <title>Đặt Thành Công - STour</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #0ea5e9; --dark: #0f172a; --light: #f8fafc; --success: #10b981; }
@@ -105,7 +105,7 @@
             <p style="color: #a21caf;">Mở ứng dụng Momo và chuyển <b th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></b> tới số điện thoại sau:</p>
             <ul>
                 <li style="color: #a21caf;">Số điện thoại: <b>0987.654.321</b></li>
-                <li style="color: #a21caf;">Tên người nhận: <b>TUAN VI VU</b></li>
+                <li style="color: #a21caf;">Tên người nhận: <b>Nhóm 14 STour</b></li>
             </ul>
             <p style="color: #a21caf;">Lời nhắn (Bắt buộc):</p>
             <div class="highlight" style="border-color: #e879f9; color: #86198f;" th:text="${order.orderCode}"></div>
@@ -116,7 +116,7 @@
             <h3 style="color: #1e40af;">🏢 Thanh toán tại văn phòng</h3>
             <p style="color: #1d4ed8;">Vui lòng đến văn phòng của chúng tôi trong vòng 24h để hoàn tất thanh toán:</p>
             <ul>
-                <li style="color: #1d4ed8;">Địa chỉ: <b>123 Đường Du Lịch, Quận 1, TP.HCM</b></li>
+                <li style="color: #1d4ed8;">Địa chỉ: <b>123 Đường Du Lịch, Quận 1, TP.Hà Nội</b></li>
                 <li style="color: #1d4ed8;">Giờ làm việc: <b>08:00 - 17:30 (Thứ 2 - Thứ 7)</b></li>
             </ul>
             <p style="color: #1d4ed8;">Khi đến, vui lòng đọc mã đơn hàng: <b th:text="${order.orderCode}"></b></p>

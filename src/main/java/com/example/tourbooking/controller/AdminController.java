@@ -28,7 +28,7 @@ public class AdminController {
     @Autowired
     private CloudinaryService cloudinaryService;
 
-    @GetMapping
+  /*  @GetMapping
     public String dashboard(Model model) {
         List<Order> orders = orderService.getAllOrders();
         
@@ -149,5 +149,10 @@ public class AdminController {
     public String deleteTour(@PathVariable("id") Long id) {
         tourService.deleteTour(id);
         return "redirect:/admin/tours";
+    }*/
+
+    @GetMapping("/blank")
+    public String blankPage() {
+        return "admin/blank"; // Trỏ tới templates/admin/blank.html
     }
 }

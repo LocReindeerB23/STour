@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Đơn hàng - Tuấn Vi Vu Admin</title>
+    <title>Quản lý Đơn hàng - STour Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #0ea5e9; --dark: #0f172a; --light: #f8fafc; --gray: #64748b; --sidebar: #1e293b; }
@@ -49,7 +49,7 @@
 <body>
 
     <div class="sidebar">
-        <a href="/" class="sidebar-header">Tuấn Vi Vu Admin</a>
+        <a href="/" class="sidebar-header">STour Admin</a>
         <div class="sidebar-nav">
             <a href="/admin" class="nav-item">📊 Dashboard</a>
             <a href="/admin/orders" class="nav-item active">📝 Quản lý Đơn hàng</a>
@@ -78,7 +78,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:if="${orders.empty}">
+                    <tr th:if="${orders.isEmpty()}">
                         <td colspan="6" class="empty-state">Chưa có đơn hàng nào trong hệ thống</td>
                     </tr>
                     <tr th:each="order : ${orders}">
